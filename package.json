@@ -16,5 +16,9 @@
     "@types/node": "25.2.3",
     "ts-node": "10.9.2",
     "typescript": "5.9.3"
+  },
+  "dependencies": {
+    "graphology": "0.26.0",
+    "graphology-shortest-path": "2.1.0"
   }
 }
