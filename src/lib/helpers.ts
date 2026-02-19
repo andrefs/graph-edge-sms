@@ -90,6 +90,10 @@ export function getShortestPathLength(
 }
 
 export function getDepth(graph: Graph, node: string, predicates?: string | string[]): number {
+  if (!graph.hasNode(node)) {
+    return 0;
+  }
+
   const predArray = predicates
     ? Array.isArray(predicates) ? predicates : [predicates]
     : null;

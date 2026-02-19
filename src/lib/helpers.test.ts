@@ -1,0 +1,196 @@
+import { describe, it, expect } from 'vitest';
+import Graph from 'graphology';
+import {
+  bfsShortestPath,
+  getShortestPathLength,
+  getDepth,
+  findLCAs,
+  getPathLengthToAncestor,
+} from './helpers';
+
+describe('bfsShortestPath', () => {
+  const createTaxonomy = () => {
+    const g = new Graph();
+    ['animal', 'mammal', 'bird', 'dog', 'cat', 'penguin'].forEach(n => g.addNode(n));
+    g.addEdge('animal', 'mammal', { predicate: 'is-a' });
+    g.addEdge('animal', 'bird', { predicate: 'is-a' });
+    g.addEdge('mammal', 'dog', { predicate: 'is-a' });
+    g.addEdge('mammal', 'cat', { predicate: 'is-a' });
+    g.addEdge('bird', 'penguin', { predicate: 'is-a' });
+    return g;
+  };
+
+  it('returns path for connected nodes', () => {
+    const g = createTaxonomy();
+    const result = bfsShortestPath(g, 'dog', 'cat');
+    expect(result).toEqual(['dog', 'mammal', 'cat']);
+  });
+
+  it('returns single element array for same node', () => {
+    const g = createTaxonomy();
+    const result = bfsShortestPath(g, 'dog', 'dog');
+    expect(result).toEqual(['dog']);
+  });
+
+  it('returns null for disconnected nodes', () => {
+    const g = createTaxonomy();
+    g.addNode('plant');
+    const result = bfsShortestPath(g, 'dog', 'plant');
+    expect(result).toBeNull();
+  });
+
+  it('returns null for nonexistent nodes', () => {
+    const g = createTaxonomy();
+    const result = bfsShortestPath(g, 'dog', 'nonexistent');
+    expect(result).toBeNull();
+  });
+
+  it('finds path in reverse direction', () => {
+    const g = createTaxonomy();
+    const result = bfsShortestPath(g, 'cat', 'dog');
+    expect(result).toEqual(['cat', 'mammal', 'dog']);
+  });
+});
+
+describe('getShortestPathLength', () => {
+  const createTaxonomy = () => {
+    const g = new Graph();
+    ['animal', 'mammal', 'bird', 'dog', 'penguin'].forEach(n => g.addNode(n));
+    g.addEdge('animal', 'mammal', { predicate: 'is-a' });
+    g.addEdge('animal', 'bird', { predicate: 'is-a' });
+    g.addEdge('mammal', 'dog', { predicate: 'is-a' });
+    g.addEdge('bird', 'penguin', { predicate: 'is-a' });
+    return g;
+  };
+
+  it('returns 0 for same node', () => {
+    const g = createTaxonomy();
+    expect(getShortestPathLength(g, 'dog', 'dog')).toBe(0);
+  });
+
+  it('returns 1 for adjacent nodes', () => {
+    const g = createTaxonomy();
+    expect(getShortestPathLength(g, 'dog', 'mammal')).toBe(1);
+  });
+
+  it('returns 2 for nodes two edges apart', () => {
+    const g = createTaxonomy();
+    expect(getShortestPathLength(g, 'dog', 'animal')).toBe(2);
+  });
+
+  it('returns null for disconnected nodes', () => {
+    const g = createTaxonomy();
+    g.addNode('plant');
+    expect(getShortestPathLength(g, 'dog', 'plant')).toBeNull();
+  });
+});
+
+describe('getDepth', () => {
+  const createTaxonomy = () => {
+    const g = new Graph();
+    ['animal', 'mammal', 'bird', 'dog'].forEach(n => g.addNode(n));
+    g.addEdge('animal', 'mammal', { predicate: 'is-a' });
+    g.addEdge('animal', 'bird', { predicate: 'is-a' });
+    g.addEdge('mammal', 'dog', { predicate: 'is-a' });
+    return g;
+  };
+
+  it('returns 0 for root node', () => {
+    const g = createTaxonomy();
+    expect(getDepth(g, 'animal')).toBe(0);
+  });
+
+  it('returns 1 for direct child of root', () => {
+    const g = createTaxonomy();
+    expect(getDepth(g, 'mammal')).toBe(1);
+  });
+
+  it('returns 2 for grandchild', () => {
+    const g = createTaxonomy();
+    expect(getDepth(g, 'dog')).toBe(2);
+  });
+
+  it('returns 0 for nonexistent node', () => {
+    const g = createTaxonomy();
+    expect(getDepth(g, 'nonexistent')).toBe(0);
+  });
+});
+
+describe('findLCAs', () => {
+  const createTaxonomy = () => {
+    const g = new Graph();
+    ['animal', 'mammal', 'bird', 'dog', 'cat', 'penguin'].forEach(n => g.addNode(n));
+    g.addEdge('animal', 'mammal', { predicate: 'is-a' });
+    g.addEdge('animal', 'bird', { predicate: 'is-a' });
+    g.addEdge('mammal', 'dog', { predicate: 'is-a' });
+    g.addEdge('mammal', 'cat', { predicate: 'is-a' });
+    g.addEdge('bird', 'penguin', { predicate: 'is-a' });
+    return g;
+  };
+
+  it('returns node itself for same node', () => {
+    const g = createTaxonomy();
+    expect(findLCAs(g, 'dog', 'dog')).toContain('dog');
+  });
+
+  it('returns parent for siblings', () => {
+    const g = createTaxonomy();
+    const result = findLCAs(g, 'dog', 'cat');
+    expect(result).toContain('mammal');
+  });
+
+  it('returns root for cousins', () => {
+    const g = createTaxonomy();
+    const result = findLCAs(g, 'dog', 'penguin');
+    expect(result).toContain('animal');
+  });
+
+  it('returns ancestor for parent-child', () => {
+    const g = createTaxonomy();
+    const result = findLCAs(g, 'dog', 'mammal');
+    expect(result).toContain('mammal');
+  });
+
+  it('returns empty array for disconnected nodes', () => {
+    const g = createTaxonomy();
+    g.addNode('plant');
+    expect(findLCAs(g, 'dog', 'plant')).toEqual([]);
+  });
+});
+
+describe('getPathLengthToAncestor', () => {
+  const createTaxonomy = () => {
+    const g = new Graph();
+    ['animal', 'mammal', 'bird', 'dog', 'penguin'].forEach(n => g.addNode(n));
+    g.addEdge('animal', 'mammal', { predicate: 'is-a' });
+    g.addEdge('animal', 'bird', { predicate: 'is-a' });
+    g.addEdge('mammal', 'dog', { predicate: 'is-a' });
+    g.addEdge('bird', 'penguin', { predicate: 'is-a' });
+    return g;
+  };
+
+  it('returns 0 when node is the ancestor', () => {
+    const g = createTaxonomy();
+    expect(getPathLengthToAncestor(g, 'mammal', 'mammal')).toBe(0);
+  });
+
+  it('returns 1 for direct parent', () => {
+    const g = createTaxonomy();
+    expect(getPathLengthToAncestor(g, 'dog', 'mammal')).toBe(1);
+  });
+
+  it('returns 2 for grandparent', () => {
+    const g = createTaxonomy();
+    expect(getPathLengthToAncestor(g, 'dog', 'animal')).toBe(2);
+  });
+
+  it('returns null when not an ancestor', () => {
+    const g = createTaxonomy();
+    expect(getPathLengthToAncestor(g, 'dog', 'bird')).toBeNull();
+  });
+
+  it('returns null for nonexistent ancestor', () => {
+    const g = createTaxonomy();
+    expect(getPathLengthToAncestor(g, 'dog', 'nonexistent')).toBeNull();
+  });
+});
