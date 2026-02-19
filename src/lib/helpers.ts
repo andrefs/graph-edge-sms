@@ -23,6 +23,10 @@ export function bfsShortestPath(
   target: string,
   predicates?: string | string[]
 ): string[] | null {
+  if (!graph.hasNode(source) || !graph.hasNode(target)) {
+    return null;
+  }
+
   const predArray = predicates
     ? Array.isArray(predicates) ? predicates : [predicates]
     : null;
