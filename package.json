@@ -1,6 +1,6 @@
 {
   "name": "graph-edge-sms",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Graph edge-based semantic measures using graphology graphs",
   "main": "dist/index.js",
   "scripts": {
