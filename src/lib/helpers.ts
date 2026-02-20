@@ -1,16 +1,8 @@
 import GraphConstructor from 'graphology';
 
-export type Graph = InstanceType<typeof GraphConstructor>;
+import type { Graph, ExtraOptions } from './types';
 
-/**
- * Extra options for semantic measures
- */
-export interface ExtraOptions {
-  /** Predicate(s) to use for filtering edges */
-  predicates?: string | string[];
-  /** Maximum depth of the taxonomy (D) */
-  maxDepth?: number;
-}
+export type { Graph, ExtraOptions };
 
 // ============== Helper Functions ==============
 
@@ -45,7 +37,7 @@ export function bfsShortestPath(
 
   while (queue.length > 0) {
     const current = queue.shift()!;
-    
+
     if (current === target) {
       // Reconstruct path
       const path: string[] = [];
@@ -68,7 +60,7 @@ export function bfsShortestPath(
         // Check edge passes filter
         const edge = graph.edge(current, neighbor) || graph.edge(neighbor, current);
         if (!edge || (filter && !filter(edge))) continue;
-        
+
         visited.add(neighbor);
         parent.set(neighbor, current);
         queue.push(neighbor);

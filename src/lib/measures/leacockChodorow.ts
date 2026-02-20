@@ -1,0 +1,40 @@
+import type { Graph, ExtraOptions } from '../types';
+import { findLCAs, getPathLengthToAncestor } from '../helpers';
+
+export function leacockChodorow(
+  graph: Graph,
+  concept1: string,
+  concept2: string,
+  options: ExtraOptions = {}
+): number {
+  const { maxDepth } = options;
+  
+  if (maxDepth === undefined || maxDepth <= 0) {
+    return 0;
+  }
+
+  const lcas = findLCAs(graph, concept1, concept2, options.predicates);
+  
+  if (lcas.length === 0) {
+    return 0;
+  }
+
+  let shortestPath = Infinity;
+
+  for (const lca of lcas) {
+    const path1 = getPathLengthToAncestor(graph, concept1, lca, options.predicates);
+    const path2 = getPathLengthToAncestor(graph, concept2, lca, options.predicates);
+
+    if (path1 !== null && path2 !== null) {
+      shortestPath = Math.min(shortestPath, path1 + path2);
+    }
+  }
+
+  if (shortestPath === Infinity) {
+    return 0;
+  }
+
+  const n = shortestPath + 1;
+  
+  return Math.log(2 * maxDepth) - Math.log(n);
+}
