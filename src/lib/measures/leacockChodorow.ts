@@ -1,12 +1,7 @@
-import type { Graph, ExtraOptions } from '../types';
+import type { Graph, ExtraOptions, MeasureFunction } from '../types';
 import { findLCAs, getPathLengthToAncestor } from '../helpers';
 
-export function leacockChodorow(
-  graph: Graph,
-  concept1: string,
-  concept2: string,
-  options: ExtraOptions = {}
-): number {
+export const leacockChodorow: MeasureFunction = (graph, concept1, concept2, options = {}) => {
   const { maxDepth } = options;
   
   if (maxDepth === undefined || maxDepth <= 0) {
@@ -37,4 +32,4 @@ export function leacockChodorow(
   const n = shortestPath + 1;
   
   return Math.log(2 * maxDepth) - Math.log(n);
-}
+};

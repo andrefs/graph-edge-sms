@@ -1,12 +1,7 @@
-import type { Graph, ExtraOptions } from '../types';
+import type { Graph, ExtraOptions, MeasureFunction } from '../types';
 import { getShortestPathLength } from '../helpers';
 
-export function resnikEdge(
-  graph: Graph,
-  concept1: string,
-  concept2: string,
-  options: ExtraOptions = {}
-): number {
+export const resnikEdge: MeasureFunction = (graph, concept1, concept2, options = {}) => {
   const { maxDepth } = options;
   const pathLength = getShortestPathLength(graph, concept1, concept2, options.predicates);
   
@@ -15,4 +10,4 @@ export function resnikEdge(
   }
   
   return 2 * maxDepth - pathLength;
-}
+};

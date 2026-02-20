@@ -1,12 +1,7 @@
-import type { Graph, ExtraOptions } from '../types';
+import type { Graph, ExtraOptions, MeasureFunction } from '../types';
 import { getShortestPathLength } from '../helpers';
 
-export function shortestPath(
-  graph: Graph,
-  concept1: string,
-  concept2: string,
-  options: ExtraOptions = {}
-): number {
+export const shortestPath: MeasureFunction = (graph, concept1, concept2, options = {}) => {
   const pathLength = getShortestPathLength(graph, concept1, concept2, options.predicates);
   return pathLength ?? 0;
-}
+};

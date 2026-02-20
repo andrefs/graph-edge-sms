@@ -1,12 +1,7 @@
-import type { Graph, ExtraOptions } from '../types';
+import type { Graph, ExtraOptions, MeasureFunction } from '../types';
 import { getDepth, findLCAs, getPathLengthToAncestor } from '../helpers';
 
-export function wuPalmer(
-  graph: Graph,
-  concept1: string,
-  concept2: string,
-  options: ExtraOptions = {}
-): number {
+export const wuPalmer: MeasureFunction = (graph, concept1, concept2, options = {}) => {
   const lcas = findLCAs(graph, concept1, concept2, options.predicates);
   
   if (lcas.length === 0) {
@@ -27,4 +22,4 @@ export function wuPalmer(
   }
 
   return bestScore;
-}
+};
