@@ -148,7 +148,7 @@ export function findLCAs(
   while (queue1.length > 0) {
     const current = queue1.shift()!;
     ancestors1.add(current);
-    for (const neighbor of graph.inboundNeighbors(current)) {
+    for (const neighbor of graph.outboundNeighbors(current)) {
       if (!ancestors1.has(neighbor)) {
         const edge = getEdgeAttributes(graph, current, neighbor);
         if (!edge || (filter && !filter(edge))) continue;
@@ -168,7 +168,7 @@ export function findLCAs(
     if (ancestors1.has(current)) {
       lcas.add(current);
     }
-    for (const neighbor of graph.inboundNeighbors(current)) {
+    for (const neighbor of graph.outboundNeighbors(current)) {
       if (!visited2.has(neighbor)) {
         const edge = getEdgeAttributes(graph, current, neighbor);
         if (!edge || (filter && !filter(edge))) continue;
@@ -207,7 +207,7 @@ export function getPathLengthToAncestor(
       return dist;
     }
 
-    for (const neighbor of graph.inboundNeighbors(current)) {
+    for (const neighbor of graph.outboundNeighbors(current)) {
       if (!visited.has(neighbor)) {
         const edge = getEdgeAttributes(graph, current, neighbor);
         if (!edge || (filter && !filter(edge))) continue;

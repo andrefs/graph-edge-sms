@@ -26,9 +26,11 @@ const MAX_DEPTH = 3;
  * Taxonomy structure used in tests:
  * 
  *       animal
- *       /    \
+ *       ^    ^
+ *      /      \
  *    mammal  bird
- *     /   \    \
+ *     ^   ^    ^
+ *    /     \    \ 
  *   dog   cat  penguin
  */
 

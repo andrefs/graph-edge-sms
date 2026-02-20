@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import Graph from 'graphology';
+import { MultiDirectedGraph as Graph } from 'graphology';
 import {
   bfsShortestPath,
   getShortestPathLength,
