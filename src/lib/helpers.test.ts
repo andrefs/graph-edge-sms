@@ -12,11 +12,11 @@ describe('bfsShortestPath', () => {
   const createTaxonomy = () => {
     const g = new Graph();
     ['animal', 'mammal', 'bird', 'dog', 'cat', 'penguin'].forEach(n => g.addNode(n));
-    g.addEdge('animal', 'mammal', { predicate: 'is-a' });
-    g.addEdge('animal', 'bird', { predicate: 'is-a' });
-    g.addEdge('mammal', 'dog', { predicate: 'is-a' });
-    g.addEdge('mammal', 'cat', { predicate: 'is-a' });
-    g.addEdge('bird', 'penguin', { predicate: 'is-a' });
+    g.addEdge('mammal', 'animal', { predicate: 'is-a' });
+    g.addEdge('bird', 'animal', { predicate: 'is-a' });
+    g.addEdge('dog', 'mammal', { predicate: 'is-a' });
+    g.addEdge('cat', 'mammal', { predicate: 'is-a' });
+    g.addEdge('penguin', 'bird', { predicate: 'is-a' });
     return g;
   };
 
@@ -56,10 +56,10 @@ describe('getShortestPathLength', () => {
   const createTaxonomy = () => {
     const g = new Graph();
     ['animal', 'mammal', 'bird', 'dog', 'penguin'].forEach(n => g.addNode(n));
-    g.addEdge('animal', 'mammal', { predicate: 'is-a' });
-    g.addEdge('animal', 'bird', { predicate: 'is-a' });
-    g.addEdge('mammal', 'dog', { predicate: 'is-a' });
-    g.addEdge('bird', 'penguin', { predicate: 'is-a' });
+    g.addEdge('mammal', 'animal', { predicate: 'is-a' });
+    g.addEdge('bird', 'animal', { predicate: 'is-a' });
+    g.addEdge('dog', 'mammal', { predicate: 'is-a' });
+    g.addEdge('penguin', 'bird', { predicate: 'is-a' });
     return g;
   };
 
@@ -89,9 +89,9 @@ describe('getDepth', () => {
   const createTaxonomy = () => {
     const g = new Graph();
     ['animal', 'mammal', 'bird', 'dog'].forEach(n => g.addNode(n));
-    g.addEdge('animal', 'mammal', { predicate: 'is-a' });
-    g.addEdge('animal', 'bird', { predicate: 'is-a' });
-    g.addEdge('mammal', 'dog', { predicate: 'is-a' });
+    g.addEdge('mammal', 'animal', { predicate: 'is-a' });
+    g.addEdge('bird', 'animal', { predicate: 'is-a' });
+    g.addEdge('dog', 'mammal', { predicate: 'is-a' });
     return g;
   };
 
@@ -120,11 +120,11 @@ describe('findLCAs', () => {
   const createTaxonomy = () => {
     const g = new Graph();
     ['animal', 'mammal', 'bird', 'dog', 'cat', 'penguin'].forEach(n => g.addNode(n));
-    g.addEdge('animal', 'mammal', { predicate: 'is-a' });
-    g.addEdge('animal', 'bird', { predicate: 'is-a' });
-    g.addEdge('mammal', 'dog', { predicate: 'is-a' });
-    g.addEdge('mammal', 'cat', { predicate: 'is-a' });
-    g.addEdge('bird', 'penguin', { predicate: 'is-a' });
+    g.addEdge('mammal', 'animal', { predicate: 'is-a' });
+    g.addEdge('bird', 'animal', { predicate: 'is-a' });
+    g.addEdge('dog', 'mammal', { predicate: 'is-a' });
+    g.addEdge('cat', 'mammal', { predicate: 'is-a' });
+    g.addEdge('penguin', 'bird', { predicate: 'is-a' });
     return g;
   };
 
@@ -162,10 +162,10 @@ describe('getPathLengthToAncestor', () => {
   const createTaxonomy = () => {
     const g = new Graph();
     ['animal', 'mammal', 'bird', 'dog', 'penguin'].forEach(n => g.addNode(n));
-    g.addEdge('animal', 'mammal', { predicate: 'is-a' });
-    g.addEdge('animal', 'bird', { predicate: 'is-a' });
-    g.addEdge('mammal', 'dog', { predicate: 'is-a' });
-    g.addEdge('bird', 'penguin', { predicate: 'is-a' });
+    g.addEdge('mammal', 'animal', { predicate: 'is-a' });
+    g.addEdge('bird', 'animal', { predicate: 'is-a' });
+    g.addEdge('dog', 'mammal', { predicate: 'is-a' });
+    g.addEdge('penguin', 'bird', { predicate: 'is-a' });
     return g;
   };
 

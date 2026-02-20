@@ -113,9 +113,9 @@ export function getDepth(graph: Graph, node: string, predicates?: string | strin
     const [current, depth] = queue.shift()!;
     maxDepth = Math.max(maxDepth, depth);
 
-    graph.forEachInNeighbor(current, (neighbor) => {
+    graph.forEachOutNeighbor(current, (neighbor) => {
       if (!visited.has(neighbor)) {
-        const edge = graph.edge(neighbor, current);
+        const edge = graph.edge(current, neighbor);
         if (!edge || (filter && !filter(edge))) return;
         visited.add(neighbor);
         queue.push([neighbor, depth + 1]);
@@ -132,6 +132,10 @@ export function findLCAs(
   node2: string,
   predicates?: string | string[]
 ): string[] {
+  if (!graph.hasNode(node1) || !graph.hasNode(node2)) {
+    return [];
+  }
+
   const predArray = predicates
     ? Array.isArray(predicates) ? predicates : [predicates]
     : null;
@@ -148,9 +152,9 @@ export function findLCAs(
   while (queue1.length > 0) {
     const current = queue1.shift()!;
     ancestors1.add(current);
-    graph.forEachInNeighbor(current, (neighbor) => {
+    graph.forEachOutNeighbor(current, (neighbor) => {
       if (!ancestors1.has(neighbor)) {
-        const edge = graph.edge(neighbor, current);
+        const edge = graph.edge(current, neighbor);
         if (!edge || (filter && !filter(edge))) return;
         queue1.push(neighbor);
       }
@@ -168,9 +172,9 @@ export function findLCAs(
     if (ancestors1.has(current)) {
       lcas.add(current);
     }
-    graph.forEachInNeighbor(current, (neighbor) => {
+    graph.forEachOutNeighbor(current, (neighbor) => {
       if (!visited2.has(neighbor)) {
-        const edge = graph.edge(neighbor, current);
+        const edge = graph.edge(current, neighbor);
         if (!edge || (filter && !filter(edge))) return;
         visited2.add(neighbor);
         queue2.push(neighbor);
@@ -207,9 +211,9 @@ export function getPathLengthToAncestor(
       return dist;
     }
 
-    graph.forEachInNeighbor(current, (neighbor) => {
+    graph.forEachOutNeighbor(current, (neighbor) => {
       if (!visited.has(neighbor)) {
-        const edge = graph.edge(neighbor, current);
+        const edge = graph.edge(current, neighbor);
         if (!edge || (filter && !filter(edge))) return;
         visited.add(neighbor);
         queue.push([neighbor, dist + 1]);

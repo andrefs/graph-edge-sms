@@ -127,7 +127,7 @@ export function leacockChodorow(
     }
   }
 
-  if (shortestPath === Infinity || shortestPath === 0) {
+  if (shortestPath === Infinity) {
     return 0;
   }
 
