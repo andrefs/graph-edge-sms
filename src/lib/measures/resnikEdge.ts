@@ -1,4 +1,4 @@
-import type { Graph, ExtraOptions, MeasureFunction } from '../types';
+import type { ExtraOptions, MeasureFunction } from '../types';
 import { getShortestPathLength } from '../helpers';
 
 export const resnikEdge: MeasureFunction = (graph, concept1, concept2, options = {}) => {

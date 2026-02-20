@@ -1,16 +1,15 @@
-import GraphConstructor from 'graphology';
+import { MultiDirectedGraph } from 'graphology';
 
-
-export type Graph = InstanceType<typeof GraphConstructor>;
+export { MultiDirectedGraph as Graph };
 
 export interface ExtraOptions {
   predicates?: string | string[];
   maxDepth?: number;
-  [key: string]: any; // Allow additional options
+  [key: string]: any;
 }
 
 export type MeasureFunction = (
-  graph: Graph,
+  graph: MultiDirectedGraph,
   concept1: string,
   concept2: string,
   options?: ExtraOptions

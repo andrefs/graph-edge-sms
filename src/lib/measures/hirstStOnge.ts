@@ -21,16 +21,18 @@ interface State {
  * @returns An array of objects, each containing a neighboring node and the direction of the edge (UP or DOWN).
  */
 function getValidEdges(graph: MultiDirectedGraph, from: string, whitelist?: Set<string>) {
+  if (!graph.hasNode(from)) return [];
+
   const edges: { neighbor: string, dir: Direction }[] = [];
 
   for (const outEdge of graph.outEdges(from)) {
-    const predicate = graph.getNodeAttribute(outEdge, 'predicate');
+    const predicate = graph.getEdgeAttribute(outEdge, 'predicate');
     if (whitelist && !whitelist.has(predicate)) continue;
     edges.push({ neighbor: graph.target(outEdge), dir: 'UP' });
   }
 
   for (const inEdge of graph.inEdges(from)) {
-    const predicate = graph.getNodeAttribute(inEdge, 'predicate');
+    const predicate = graph.getEdgeAttribute(inEdge, 'predicate');
     if (whitelist && !whitelist.has(predicate)) continue;
     edges.push({ neighbor: graph.source(inEdge), dir: 'DOWN' });
   }
@@ -50,6 +52,10 @@ export const hirstStOnge: MeasureFunction = (
   concept1: string,
   concept2: string,
   options?: HirstStOngeOptions): number => {
+  if (!graph.hasNode(concept1) || !graph.hasNode(concept2)) {
+    return 0;
+  }
+
   const C = options?.C ?? 8;
   const k = options?.k ?? 1;
   const maxLength = options?.maxLength ?? 5;

@@ -1,16 +1,20 @@
-import GraphConstructor from 'graphology';
+import type { ExtraOptions } from './types';
+import { MultiDirectedGraph } from 'graphology';
 
-import type { Graph, ExtraOptions } from './types';
+export type { ExtraOptions };
 
-export type { Graph, ExtraOptions };
+function getEdgeAttributes(graph: MultiDirectedGraph, source: string, target: string): unknown | null {
+  const edges = graph.edges(source, target);
+  if (edges.length === 0) return null;
+  return graph.getEdgeAttributes(edges[0]);
+}
 
-// ============== Helper Functions ==============
 
 /**
  * BFS-based shortest path with edge filtering
  */
 export function bfsShortestPath(
-  graph: Graph,
+  graph: MultiDirectedGraph,
   source: string,
   target: string,
   predicates?: string | string[]
@@ -58,7 +62,7 @@ export function bfsShortestPath(
     for (const neighbor of neighbors) {
       if (!visited.has(neighbor)) {
         // Check edge passes filter
-        const edge = graph.edge(current, neighbor) || graph.edge(neighbor, current);
+        const edge = getEdgeAttributes(graph, current, neighbor) || getEdgeAttributes(graph, neighbor, current);
         if (!edge || (filter && !filter(edge))) continue;
 
         visited.add(neighbor);
@@ -72,7 +76,7 @@ export function bfsShortestPath(
 }
 
 export function getShortestPathLength(
-  graph: Graph,
+  graph: MultiDirectedGraph,
   source: string,
   target: string,
   predicates?: string | string[]
@@ -81,7 +85,7 @@ export function getShortestPathLength(
   return path ? path.length - 1 : null;
 }
 
-export function getDepth(graph: Graph, node: string, predicates?: string | string[]): number {
+export function getDepth(graph: MultiDirectedGraph, node: string, predicates?: string | string[]): number {
   if (!graph.hasNode(node)) {
     return 0;
   }
@@ -105,21 +109,21 @@ export function getDepth(graph: Graph, node: string, predicates?: string | strin
     const [current, depth] = queue.shift()!;
     maxDepth = Math.max(maxDepth, depth);
 
-    graph.forEachOutNeighbor(current, (neighbor) => {
+    for (const neighbor of graph.outboundNeighbors(current)) {
       if (!visited.has(neighbor)) {
-        const edge = graph.edge(current, neighbor);
-        if (!edge || (filter && !filter(edge))) return;
+        const edge = getEdgeAttributes(graph, current, neighbor);
+        if (!edge || (filter && !filter(edge))) continue;
         visited.add(neighbor);
         queue.push([neighbor, depth + 1]);
       }
-    });
+    }
   }
 
   return maxDepth;
 }
 
 export function findLCAs(
-  graph: Graph,
+  graph: MultiDirectedGraph,
   node1: string,
   node2: string,
   predicates?: string | string[]
@@ -144,13 +148,13 @@ export function findLCAs(
   while (queue1.length > 0) {
     const current = queue1.shift()!;
     ancestors1.add(current);
-    graph.forEachOutNeighbor(current, (neighbor) => {
+    for (const neighbor of graph.inboundNeighbors(current)) {
       if (!ancestors1.has(neighbor)) {
-        const edge = graph.edge(current, neighbor);
-        if (!edge || (filter && !filter(edge))) return;
+        const edge = getEdgeAttributes(graph, current, neighbor);
+        if (!edge || (filter && !filter(edge))) continue;
         queue1.push(neighbor);
       }
-    });
+    }
   }
 
   // Find ancestors of node2 that are also ancestors of node1
@@ -164,21 +168,21 @@ export function findLCAs(
     if (ancestors1.has(current)) {
       lcas.add(current);
     }
-    graph.forEachOutNeighbor(current, (neighbor) => {
+    for (const neighbor of graph.inboundNeighbors(current)) {
       if (!visited2.has(neighbor)) {
-        const edge = graph.edge(current, neighbor);
-        if (!edge || (filter && !filter(edge))) return;
+        const edge = getEdgeAttributes(graph, current, neighbor);
+        if (!edge || (filter && !filter(edge))) continue;
         visited2.add(neighbor);
         queue2.push(neighbor);
       }
-    });
+    }
   }
 
   return Array.from(lcas);
 }
 
 export function getPathLengthToAncestor(
-  graph: Graph,
+  graph: MultiDirectedGraph,
   node: string,
   ancestor: string,
   predicates?: string | string[]
@@ -203,14 +207,14 @@ export function getPathLengthToAncestor(
       return dist;
     }
 
-    graph.forEachOutNeighbor(current, (neighbor) => {
+    for (const neighbor of graph.inboundNeighbors(current)) {
       if (!visited.has(neighbor)) {
-        const edge = graph.edge(current, neighbor);
-        if (!edge || (filter && !filter(edge))) return;
+        const edge = getEdgeAttributes(graph, current, neighbor);
+        if (!edge || (filter && !filter(edge))) continue;
         visited.add(neighbor);
         queue.push([neighbor, dist + 1]);
       }
-    });
+    }
   }
 
   return null;

@@ -1,15 +1,16 @@
 import { describe, it, expect } from 'vitest';
-import Graph from 'graphology';
+import { MultiDirectedGraph } from 'graphology';
 import {
   shortestPath,
   radaSimilarity,
   resnikEdge,
   wuPalmer,
   leacockChodorow,
+  hirstStOnge,
 } from './measures';
 
 const createTaxonomy = () => {
-  const g = new Graph();
+  const g = new MultiDirectedGraph();
   ['animal', 'mammal', 'bird', 'dog', 'cat', 'penguin'].forEach(n => g.addNode(n));
   g.addEdge('mammal', 'animal', { predicate: 'is-a' });
   g.addEdge('bird', 'animal', { predicate: 'is-a' });
@@ -44,6 +45,7 @@ interface TestCase {
     resnikEdge: number;
     wuPalmer: number;
     leacockChodorow: number;
+    hirstStOnge: number;
   };
 }
 
@@ -58,6 +60,7 @@ const testCases: TestCase[] = [
       resnikEdge: 6,
       wuPalmer: 1,
       leacockChodorow: Math.log(6),
+      hirstStOnge: 8,
     },
   },
   {
@@ -70,6 +73,7 @@ const testCases: TestCase[] = [
       resnikEdge: 5,
       wuPalmer: 2 / 3,
       leacockChodorow: Math.log(6) - Math.log(2),
+      hirstStOnge: 7,
     },
   },
   {
@@ -82,6 +86,7 @@ const testCases: TestCase[] = [
       resnikEdge: 4,
       wuPalmer: 0,
       leacockChodorow: Math.log(6) - Math.log(3),
+      hirstStOnge: 6,
     },
   },
   {
@@ -94,6 +99,7 @@ const testCases: TestCase[] = [
       resnikEdge: 4,
       wuPalmer: 0.5,
       leacockChodorow: Math.log(6) - Math.log(3),
+      hirstStOnge: 5,
     },
   },
   {
@@ -106,6 +112,7 @@ const testCases: TestCase[] = [
       resnikEdge: 2,
       wuPalmer: 0,
       leacockChodorow: Math.log(6) - Math.log(5),
+      hirstStOnge: 3,
     },
   },
 ];
@@ -113,14 +120,14 @@ const testCases: TestCase[] = [
 /**
  * Run tests for a specific measure
  */
-function runMeasureTests(measureName: string, measureFn: (g: Graph, c1: string, c2: string, options?: any) => number, options?: any) {
+function runMeasureTests(measureName: string, measureFn: (g: MultiDirectedGraph, c1: string, c2: string, options?: any) => number, options?: any) {
   describe(measureName, () => {
     for (const tc of testCases) {
       it(`returns expected value for ${tc.name}`, () => {
         const g = createTaxonomy();
         const result = measureFn(g, tc.c1, tc.c2, options);
         const expected = tc.expected[measureFn.name as keyof typeof tc.expected];
-        
+
         if (Number.isInteger(expected)) {
           expect(result).toBe(expected);
         } else {
@@ -148,11 +155,12 @@ runMeasureTests('radaSimilarity', radaSimilarity);
 runMeasureTests('resnikEdge', resnikEdge, { maxDepth: MAX_DEPTH });
 runMeasureTests('wuPalmer', wuPalmer);
 runMeasureTests('leacockChodorow', leacockChodorow, { maxDepth: MAX_DEPTH });
+runMeasureTests('hirstStOnge', hirstStOnge, { C: 8, k: 1, maxLength: 5 });
 
 // Additional test for single node graph (radaSimilarity specific)
 describe('radaSimilarity', () => {
   it('handles single node graph', () => {
-    const g = new Graph();
+    const g = new MultiDirectedGraph();
     g.addNode('only');
     expect(radaSimilarity(g, 'only', 'only')).toBe(1);
   });
