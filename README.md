@@ -1,11 +1,50 @@
 # Graph Edge Semantic Measures
 
-Path-based semantic similarity and relatedness measures using graphology graphs.
+Path-based semantic similarity and relatedness measures using graphology MultiDirectedGraphs.
 
 ## Installation
 
 ```bash
 npm install
+```
+
+## Usage
+
+```typescript
+import { MultiDirectedGraph } from 'graphology';
+import {
+  shortestPath,
+  radaSimilarity,
+  resnikEdge,
+  wuPalmer,
+  leacockChodorow,
+  hirstStOnge,
+} from 'graph-edge-sms';
+
+const graph = new MultiDirectedGraph();
+graph.addNode('animal', 'mammal', 'bird', 'dog', 'cat');
+graph.addEdge('mammal', 'animal', { predicate: 'is-a' });
+graph.addEdge('bird', 'animal', { predicate: 'is-a' });
+graph.addEdge('dog', 'mammal', { predicate: 'is-a' });
+graph.addEdge('cat', 'mammal', { predicate: 'is-a' });
+
+// Shortest path (Rada Distance)
+shortestPath(graph, 'dog', 'cat'); // 2
+
+// Rada Similarity
+radaSimilarity(graph, 'dog', 'cat'); // 0.333...
+
+// Resnik Edge (requires maxDepth)
+resnikEdge(graph, 'dog', 'cat', { maxDepth: 3 }); // 4
+
+// Wu-Palmer
+wuPalmer(graph, 'dog', 'cat'); // 0.5
+
+// Leacock-Chodorow (requires maxDepth)
+leacockChodorow(graph, 'dog', 'cat', { maxDepth: 3 }); // 0.693...
+
+// Hirst-St-Onge
+hirstStOnge(graph, 'dog', 'cat', { C: 8, k: 1, maxLength: 5 }); // 5
 ```
 
 ## Semantic Measures
@@ -40,7 +79,7 @@ where:
 
 **Source:** Equation (5), p. 101 in Resnik (1999). Also Equation (3.14), p. 89 in Harispe et al. (2015).
 
-### WuPalmer
+### Wu-Palmer
 
 Wu and Palmer define a similarity measure based on the depth of the least common subsumer (LCS) of two concepts and the lengths of the shortest paths from each concept to the LCS:
 
@@ -48,7 +87,7 @@ $$\mathrm{m}(c_1,c_2) = \frac{2 \times \mathrm{depth}(LCS(c_1,c_2))}{2 \times \m
 
 **Source:** Unnumbered equation in p. 136 in Wu & Palmer (1994). Also Equation (3), p. 3 in Harispe et al. (2014), Equation (3.16), p. 89 in Harispe et al. (2015).
 
-### LeacockChodorow
+### Leacock-Chodorow
 
 Defined as the negative log of the shortest path distance normalized by the taxonomy depth:
 
@@ -60,6 +99,32 @@ where:
 
 **Source:** Unnumbered equation in p. 275 in Leacock & Chodorow (1998). Also Equation (3.15), p. 89 in Harispe et al. (2015).
 
+### Hirst-St-Onge
+
+A measure that combines shortest path length with the number of direction changes in the path:
+
+$$\mathrm{m}(c_1,c_2) = C - \mathrm{length}(sp(c_1,c_2)) - k \times d$$
+
+where:
+- $C$ is a constant (default: 8)
+- $k$ is a constant for weighting direction changes (default: 1)
+- $d$ is the number of direction changes in the path
+
+**Source:** Hirst & St-Onge (1998)
+
+## Options
+
+All measures accept an optional `ExtraOptions` object:
+
+- `predicates?: string | string[]` - Filter edges by predicate(s)
+- `maxDepth?: number` - Maximum depth of the taxonomy (required for Resnik Edge and Leacock-Chodorow)
+
+Additional options for Hirst-St-Onge:
+
+- `C?: number` - Constant (default: 8)
+- `k?: number` - Direction change weight (default: 1)
+- `maxLength?: number` - Maximum path length (default: 5)
+
 ## References
 
 - [1] P. Resnik, "Semantic similarity in a taxonomy: An information-based measure and its application to problems of ambiguity in natural language", Journal of artificial intelligence research, vol. 11, pp. 95–130, 1999.
@@ -70,3 +135,4 @@ where:
 - [6] S. Harispe, S. Ranwez, S. Janaqi, and J. Montmain, "Semantic similarity from natural language and ontology analysis", Synthesis Lectures on Human Language Technologies, vol. 8, no. 1, pp. 1–254, 2015.
 - [7] Z. Wu and M. Palmer, "Verb Semantics and Lexical Selection", in 32nd Annual Meeting of the Association for Computational Linguistics, 1994, pp. 133–138.
 - [8] C. Leacock and M. Chodorow, "Combining Local Context and WordNet Similarity for Word Sense", WordNet: An electronic lexical database, p. 265, 1998.
+- [9] G. Hirst and D. St-Onge, "Lexical Chains as Representations of Context for the Detection and Correction of Malapropisms", WordNet: An electronic lexical database, p. 305, 1998.
