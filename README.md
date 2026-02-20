@@ -1,4 +1,4 @@
-# Graph Edge SMS
+# Graph Edge Semantic Measures
 
 Path-based semantic similarity and relatedness measures using graphology graphs.
 
