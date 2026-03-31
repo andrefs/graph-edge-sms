@@ -2,6 +2,8 @@
 
 Path-based semantic similarity and relatedness measures using graphology MultiDirectedGraphs.
 
+> **This package is discontinued.** Please use [`graph-based-sms`](https://github.com/andrefs/graph-based-sms) instead, which includes both path-based and feature-based measures.
+
 ## Installation
 
 ```bash
